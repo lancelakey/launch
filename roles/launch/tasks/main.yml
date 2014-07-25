@@ -1,0 +1,30 @@
+---
+- name: Launch instance
+  ec2:
+    region: "{{region}}"
+    zone: "{{zone}}"
+    keypair: "{{keypair}}"
+    group: "{{security_group}}"
+    instance_type: "{{instance_type}}"
+    image: "{{image}}"
+    wait: yes
+    count: "{{instance_count}}"
+    instance_tags: '{"project":"{{project}}","role":"{{role}}","environment":"{{env}}"}'
+    vpc_subnet_id: "{{vpc_subnet_id}}"
+    monitoring: "{{monitoring}}"
+  register: ec2
+
+- name: Add new instances to host group
+  add_host:
+    name: '{{item.public_dns_name}}'
+    groups: launch
+  with_items: ec2.instances
+
+- name: Wait for SSH to be available
+  wait_for:
+    host: '{{item.public_dns_name}}'
+    port: 22
+    delay: 60
+    timeout: 320
+    state: started
+  with_items: ec2.instances

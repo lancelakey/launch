@@ -1,0 +1,14 @@
+---
+project: SMURF
+role: api
+env: production
+
+zone: us-west-1a
+keypair: SMURF
+instance_type: t2.small
+security_group: api-production
+image: ami-9fc3c3da
+instance_count: 1
+vpc_subnet_id: subnet-SMURF
+assign_public_ip: yes
+monitoring: yes
